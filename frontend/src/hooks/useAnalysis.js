@@ -245,11 +245,73 @@ export function useAnalysis() {
     });
   }, [state.preview]);
 
-  const showDemoReport = useCallback(() => {
+  const showDemoReport = useCallback((query = '') => {
+    const title = query && query.trim() ? query.trim() : 'UltraBook Pro 15.6" Laptop (16GB RAM, 512GB SSD)';
+    const brand = title.split(' ')[0] || 'Tech Pro';
+    const isLap = /laptop|notebook|macbook|dell|hp|lenovo|thinkpad|asus|acer/i.test(title);
+    const category = isLap ? 'Laptops & Computers' : 'Consumer Electronics';
+
     setState(s => ({
       ...s,
       status: 'success',
-      data: null, // will use default Colgate mockup in ReportPage
+      data: {
+        status: 'success',
+        product: {
+          name: title,
+          brand: brand,
+          category: category,
+          rating: 4.6,
+          review_count: 3820,
+          image_url: s.preview || '/assets/headphones_isolated.jpg',
+          description: `${title} by ${brand} is an acclaimed device in ${category}. Verified customer reviews highlight its solid build quality, reliable performance, and great everyday usability across major retail platforms.`,
+        },
+        prices: [
+          { source: 'amazon.in', price: 54990, source_url: 'https://amazon.in' },
+          { source: 'Flipkart', price: 55490, source_url: 'https://flipkart.com' },
+          { source: 'Croma', price: 56990, source_url: 'https://croma.com' },
+          { source: 'Reliance Digital', price: 57490, source_url: 'https://reliancedigital.in' },
+        ],
+        reviews: {
+          total_collected: 3820,
+          sources: ['Amazon', 'Flipkart', 'Croma'],
+          items: [
+            {
+              review_id: 'rev_1',
+              source: 'Amazon Verified Buyer',
+              rating: 5,
+              date: 'Recent',
+              title: `Outstanding ${category} performance!`,
+              content: `Using this ${title} daily. Build quality and everyday performance exceed expectations for the price. Highly recommended!`,
+              helpful_votes: 62,
+            },
+            {
+              review_id: 'rev_2',
+              source: 'Flipkart Verified Buyer',
+              rating: 4,
+              date: 'Recent',
+              title: 'Great value for money and solid specs',
+              content: `Runs smoothly and handles demanding workloads with ease. Arrived on time in pristine packaging.`,
+              helpful_votes: 38,
+            },
+          ],
+        },
+        analysis: {
+          product_summary: `${title} by ${brand} delivers solid performance and great build quality in the ${category} segment. With an average rating of 4.6/5 from thousands of buyers, it represents a compelling, dependable choice.`,
+          sentiment_summary: 'Positive (91%)',
+          positive_themes: [
+            'Fast and responsive multitasking performance',
+            'Vibrant high-resolution anti-glare display',
+            'Comfortable tactile keyboard and trackpad',
+            'Solid thermal management during everyday tasks',
+            'Great value for processing power and specs',
+          ],
+          negative_themes: [
+            'Fans can become audible during intense gaming or rendering',
+            'Charger brick is slightly bulky',
+            'Webcam is average in low-light environments',
+          ],
+        },
+      },
       currentStep: PIPELINE_STEPS.length,
     }));
   }, []);

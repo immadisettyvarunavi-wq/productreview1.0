@@ -57,7 +57,7 @@ function App() {
   // Handle search query
   const handleSearch = (query) => {
     setDemoAnalyzing(false);
-    showDemoReport();
+    showDemoReport(query);
     setActiveNavTab('Reviews');
   };
 

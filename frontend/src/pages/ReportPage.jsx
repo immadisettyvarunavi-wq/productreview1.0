@@ -1,50 +1,48 @@
 import React, { useState } from 'react';
 
-// Default Colgate MaxFresh data matching the user's reference mockup
-const DEFAULT_COLGATE_DATA = {
-  name: 'Colgate MaxFresh Spicy Fresh Red Gel Toothpaste (150 g)',
-  brand: 'Colgate',
-  sku: 'COL-MF-150',
-  categoryRank: '#1 in Toothpaste (Cooling)',
-  breadcrumbs: ['Home', 'Health & Personal Care', 'Oral Care', 'Toothpaste', 'Colgate MaxFresh'],
+// Default universal fallback data for tech & consumer products
+const DEFAULT_PRODUCT_DATA = {
+  name: 'UltraBook Pro 15.6" Laptop (16GB RAM, 512GB SSD)',
+  brand: 'Tech Pro',
+  sku: 'UB-PRO-15',
+  categoryRank: '#1 in Laptops & Computers',
+  breadcrumbs: ['Home', 'Laptops & Computers', 'Tech Pro'],
   rating: 4.6,
-  reviewsCount: 36821,
-  sentimentPercent: 92,
+  reviewsCount: 3820,
+  sentimentPercent: 91,
   description:
-    'Colgate MaxFresh Spicy Fresh Red Gel Toothpaste is engineered with dissolvable cooling crystals that deliver an immediate burst of invigorating freshness, setting it apart from traditional white paste formulas. Verified customer reviews across Amazon and Flipkart praise its long-lasting breath freshening efficacy, with over 92% of buyers confirming an energized and clean oral feel that endures for hours. Formulated with active fluoride cavity protection, daily users report noticeable plaque reduction and dependable tartar defense for everyday brushing. While a small segment of reviewers note that the distinctive cinnamon-mint flavor can feel quite intense on sensitive gums initially, most praise it as a refreshing wake-up kick. Consistently retailing between ₹149 and ₹162 across major Indian platforms, it earns an exceptional 4.6/5 customer satisfaction score as a top-tier daily oral care staple.',
-  variant: 'Spicy Fresh (Red Gel)',
-  netQuantity: '150 g',
-  category: 'Toothpaste',
+    'The UltraBook Pro 15.6" combines high-performance multi-core processing with a vivid, anti-glare display for seamless daily computing and professional multitasking. Verified customer evaluations highlight its swift boot times, ergonomic tactile keyboard, and durable aluminum chassis. Power management provides solid all-day battery longevity, while dual-band connectivity ensures lag-free conferencing and streaming.',
+  variant: '16GB RAM / 512GB SSD',
+  netQuantity: '1 Unit (with 65W Fast Charger)',
+  category: 'Laptops & Computers',
   keyFeatures: [
-    'Cooling crystals for long-lasting freshness',
-    'Helps fight cavities',
-    'Unique spicy fresh flavor',
-    'Suitable for daily use',
+    'Fast multi-core processor for lag-free multitasking',
+    'Vibrant 15.6-inch anti-glare Full HD display',
+    'Ergonomic backlit keyboard with precision trackpad',
+    'Long-lasting battery with fast-charging support',
   ],
   images: [
-    '/assets/colgate_pack.jpg',
-    '/assets/colgate_tube.jpg',
-    '/assets/colgate_texture.jpg',
-    '/assets/colgate_box.jpg',
+    '/assets/headphones_isolated.jpg',
+    '/assets/headphones_table.jpg',
   ],
   featurePills: [
-    { icon: '❄️', title: 'Cooling Crystals', desc: 'Long lasting freshness' },
-    { icon: '🌶️', title: 'Spicy Fresh Flavor', desc: 'Unique and refreshing' },
-    { icon: '🛡️', title: 'Cavity Protection', desc: 'Helps fight cavities' },
-    { icon: '💙', title: 'Everyday Use', desc: 'For a confident smile' },
+    { icon: '⚡', title: 'High Performance', desc: 'Fast processing & SSD speed' },
+    { icon: '🖥️', title: 'Vivid Display', desc: 'Sharp FHD anti-glare panel' },
+    { icon: '🔋', title: 'All-Day Battery', desc: 'Up to 10 hours runtime' },
+    { icon: '🛡️', title: 'Solid Build', desc: 'Premium aluminum finish' },
   ],
   bestPrice: {
-    price: 149,
-    originalPrice: 175,
-    discount: '15%',
+    price: 54990,
+    originalPrice: 62990,
+    discount: '13%',
     store: 'amazon.in',
     storeUrl: 'https://www.amazon.in',
   },
   stores: [
-    { name: 'amazon.in', price: 149, original: 175, discount: '15%', delivery: 'FREE delivery', url: 'https://www.amazon.in' },
-    { name: 'Flipkart', price: 155, original: 175, discount: '11%', delivery: 'FREE delivery', url: 'https://www.flipkart.com' },
-    { name: 'TATA 1mg', price: 160, original: 175, discount: '9%', delivery: '+ ₹40 delivery', url: 'https://www.1mg.com' },
-    { name: 'bigbasket', price: 162, original: 175, discount: '7%', delivery: 'FREE delivery', url: 'https://www.bigbasket.com' },
+    { name: 'amazon.in', price: 54990, original: 62990, discount: '13%', delivery: 'FREE delivery', url: 'https://www.amazon.in' },
+    { name: 'Flipkart', price: 55490, original: 62990, discount: '12%', delivery: 'FREE delivery', url: 'https://www.flipkart.com' },
+    { name: 'Croma', price: 56990, original: 62990, discount: '10%', delivery: 'Store pickup / FREE', url: 'https://www.croma.com' },
+    { name: 'Reliance Digital', price: 57490, original: 62990, discount: '9%', delivery: 'FREE delivery', url: 'https://www.reliancedigital.in' },
   ],
   starDistribution: {
     5: 68,
@@ -54,54 +52,43 @@ const DEFAULT_COLGATE_DATA = {
     1: 2,
   },
   aiInsights: {
-    sentiment: 'Positive',
-    reviewCountStr: '36.8K',
+    sentiment: 'Positive (91%)',
+    reviewCountStr: '3.8K',
     likes: [
-      'Long-lasting freshness',
-      'Cooling crystals work well',
-      'Value for money',
-      'Good taste and flavor',
-      'Helps maintain oral hygiene',
+      'Fast and responsive performance',
+      'Crisp high-resolution display quality',
+      'Comfortable keyboard and smooth trackpad',
+      'Solid battery life for daily work',
+      'Great value for processing specifications',
     ],
     complaints: [
-      'Taste may be too strong for some',
-      'Packaging issues reported by a few',
-      'Not suitable for very sensitive teeth',
+      'Fans audible under heavy gaming load',
+      'Charger brick is slightly bulky',
+      'Webcam quality is average in low light',
     ],
   },
   reviews: [
     {
       id: 'rev_1',
-      author: 'Rahul Sharma',
+      author: 'Vikram Mehta',
       rating: 5,
-      date: '12 Sep 2024',
+      date: 'Recent',
       verified: true,
-      title: 'Amazing burst of freshness!',
-      content: 'I have been using Colgate MaxFresh for over 2 years now. The red gel with cooling crystals leaves an unbeatable minty freshness that lasts for hours. Highly recommended!',
-      helpful: 142,
+      title: 'Outstanding performance for everyday work and coding!',
+      content: 'Using this laptop daily for work and programming. The screen is gorgeous, key travel is crisp, and it boots up in seconds. Superb value for money!',
+      helpful: 84,
       source: 'Amazon',
     },
     {
       id: 'rev_2',
-      author: 'Priya Patel',
+      author: 'Ananya Sen',
       rating: 5,
-      date: '28 Aug 2024',
+      date: 'Recent',
       verified: true,
-      title: 'Best gel toothpaste in India',
-      content: 'Great value for money pack. Feels super refreshing every morning. The cooling crystals actually give a cool tingling sensation.',
-      helpful: 89,
+      title: 'Lightweight, fast, and great battery life',
+      content: 'Solid battery easily lasts 8+ hours of browsing and document editing. Display colors are punchy and accurate. Highly recommended for students and professionals.',
+      helpful: 52,
       source: 'Flipkart',
-    },
-    {
-      id: 'rev_3',
-      author: 'Amitabh Roy',
-      rating: 4,
-      date: '15 Jul 2024',
-      verified: true,
-      title: 'Good flavor, slightly strong spice',
-      content: 'Very good clean feeling. The spicy cinnamon-mint touch is strong initially but leaves mouth super fresh. Delivered on time.',
-      helpful: 34,
-      source: 'Amazon',
     },
   ],
 };
@@ -150,7 +137,7 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
   const reviewsData = (data && data.reviews?.items?.length) ? data.reviews.items : [];
 
   // Determine display values
-  const productName = product.name || data?.match?.product_name || (hasRealData ? 'Identified Product' : DEFAULT_COLGATE_DATA.name);
+  const productName = product.name || data?.match?.product_name || (hasRealData ? 'Identified Product' : DEFAULT_PRODUCT_DATA.name);
   const brandName = product.brand || data?.match?.brand || (productName ? productName.split(' ')[0] : 'Brand');
 
   // Smart category detector
@@ -164,23 +151,23 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
   };
 
   const categoryName = product.category || detectCategory(productName);
-  const ratingValue = product.rating || (hasRealData ? 4.5 : DEFAULT_COLGATE_DATA.rating);
-  const reviewCountValue = product.review_count || (hasRealData ? 2840 : DEFAULT_COLGATE_DATA.reviewsCount);
+  const ratingValue = product.rating || (hasRealData ? 4.5 : DEFAULT_PRODUCT_DATA.rating);
+  const reviewCountValue = product.review_count || (hasRealData ? 2840 : DEFAULT_PRODUCT_DATA.reviewsCount);
   const reviewCountFormatted = Number(reviewCountValue).toLocaleString();
 
   // Dynamic description
   const descriptionText = analysis?.product_summary || product.description || (hasRealData
     ? `${productName} by ${brandName} is a verified device in ${categoryName}. Verified customer reviews highlight its solid build quality, reliable performance, and great everyday usability. Analysis of verified user feedback indicates high customer satisfaction across top online retailers.`
-    : DEFAULT_COLGATE_DATA.description);
+    : DEFAULT_PRODUCT_DATA.description);
 
   // Dynamic image list prioritizing uploaded photo
   const primaryImage = preview || product.image_url;
   const imagesList = primaryImage
     ? [primaryImage, product.image_url || primaryImage, primaryImage].filter(Boolean)
-    : DEFAULT_COLGATE_DATA.images;
+    : DEFAULT_PRODUCT_DATA.images;
 
   // Stores and price comparison
-  const defaultPrice = categoryName.includes('Laptop') ? 49990 : 149;
+  const defaultPrice = categoryName.includes('Laptop') ? 54990 : 149;
   const storesList = pricesList.length > 0
     ? pricesList.slice(0, 4).map((p, idx) => ({
         name: p.source || 'Store',
@@ -197,9 +184,9 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
             { name: 'Croma', price: Math.round(defaultPrice * 1.04), original: Math.round(defaultPrice * 1.15), discount: '9%', delivery: 'Store pickup / FREE', url: 'https://www.croma.com' },
             { name: 'Reliance Digital', price: Math.round(defaultPrice * 1.05), original: Math.round(defaultPrice * 1.15), discount: '8%', delivery: 'FREE delivery', url: 'https://www.reliancedigital.in' },
           ]
-        : DEFAULT_COLGATE_DATA.stores);
+        : DEFAULT_PRODUCT_DATA.stores);
 
-  const bestStore = storesList[0] || DEFAULT_COLGATE_DATA.bestPrice;
+  const bestStore = storesList[0] || DEFAULT_PRODUCT_DATA.bestPrice;
 
   // Dynamic Feature Pills
   const featurePills = (hasRealData && analysis?.positive_themes?.length)
@@ -219,7 +206,7 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
             { icon: '🛡️', title: 'Authentic Hardware', desc: 'Genuine retail product' },
             { icon: '💰', title: 'Competitive Price', desc: 'Multi-store price tracking' },
           ]
-        : DEFAULT_COLGATE_DATA.featurePills);
+        : DEFAULT_PRODUCT_DATA.featurePills);
 
   // Dynamic Key Features
   const keyFeatures = (hasRealData && analysis?.positive_themes?.length)
@@ -231,11 +218,11 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
             `Reliable daily performance verified by authentic customer feedback`,
             `Backed by standard manufacturer warranty and retailer return policies`,
           ]
-        : DEFAULT_COLGATE_DATA.keyFeatures);
+        : DEFAULT_PRODUCT_DATA.keyFeatures);
 
   // Dynamic Specs
-  const specVariant = product.model_name || product.specifications?.variant || (hasRealData ? 'Official Model' : DEFAULT_COLGATE_DATA.variant);
-  const specQuantity = product.specifications?.net_quantity || product.specifications?.dimensions || (hasRealData ? 'Standard Unit' : DEFAULT_COLGATE_DATA.netQuantity);
+  const specVariant = product.model_name || product.specifications?.variant || (hasRealData ? 'Official Model' : DEFAULT_PRODUCT_DATA.variant);
+  const specQuantity = product.specifications?.net_quantity || product.specifications?.dimensions || (hasRealData ? 'Standard Unit' : DEFAULT_PRODUCT_DATA.netQuantity);
 
   const aiLikes = analysis?.positive_themes?.length
     ? analysis.positive_themes.map(t => (typeof t === 'string' ? t : t.theme))
@@ -247,7 +234,7 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
             'Good battery performance for daily usage',
             'Excellent value for the price bracket',
           ]
-        : DEFAULT_COLGATE_DATA.aiInsights.likes);
+        : DEFAULT_PRODUCT_DATA.aiInsights.likes);
 
   const aiComplaints = analysis?.negative_themes?.length
     ? analysis.negative_themes.map(t => (typeof t === 'string' ? t : t.theme))
@@ -257,7 +244,7 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
             'Pre-installed manufacturer apps may require setup',
             'Prices vary across online platforms',
           ]
-        : DEFAULT_COLGATE_DATA.aiInsights.complaints);
+        : DEFAULT_PRODUCT_DATA.aiInsights.complaints);
 
   const customerReviewsList = reviewsData.length > 0
     ? reviewsData.map((r, idx) => ({
@@ -296,7 +283,7 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
               source: 'Flipkart',
             },
           ]
-        : DEFAULT_COLGATE_DATA.reviews);
+        : DEFAULT_PRODUCT_DATA.reviews);
 
   const handlePrevImage = () => {
     setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : imagesList.length - 1));
@@ -605,11 +592,11 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
                       <div className="star-bar-track">
                         <div
                           className="star-bar-progress"
-                          style={{ width: `${DEFAULT_COLGATE_DATA.starDistribution[star]}%` }}
+                          style={{ width: `${DEFAULT_PRODUCT_DATA.starDistribution[star]}%` }}
                         />
                       </div>
                       <span className="star-percent-text">
-                        {DEFAULT_COLGATE_DATA.starDistribution[star]}%
+                        {DEFAULT_PRODUCT_DATA.starDistribution[star]}%
                       </span>
                     </div>
                   ))}
@@ -675,7 +662,7 @@ export default function ReportPage({ data, initialSubTab = 'Overview', onReset, 
                 <div className="sentiment-smiley-icon">😊</div>
                 <div className="sentiment-text-group">
                   <span className="sentiment-lead-label">Overall Sentiment</span>
-                  <h4 className="sentiment-verdict-title">{analysis?.sentiment_summary || (hasRealData ? 'Positive (89%)' : DEFAULT_COLGATE_DATA.aiInsights.sentiment)}</h4>
+                  <h4 className="sentiment-verdict-title">{analysis?.sentiment_summary || (hasRealData ? 'Positive (89%)' : DEFAULT_PRODUCT_DATA.aiInsights.sentiment)}</h4>
                   <span className="sentiment-sub-caption">
                     Based on {reviewCountFormatted} real customer reviews
                   </span>
