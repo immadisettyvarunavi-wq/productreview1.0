@@ -17,19 +17,21 @@ export default function CandidateSelector({ candidates, onSelect, onSelectColgat
             We discovered {candidates.length} matching product listings. Click on any product below to view its complete customer review intelligence, price comparison, and AI summary.
           </p>
 
-          {/* Quick Colgate Access Banner */}
+          {/* Helpful matching tip banner */}
           <div className="candidate-quick-pick-banner">
             <div className="banner-left">
               <span className="banner-sparkle">✨</span>
               <div className="banner-text">
-                <span className="banner-title">Featured: Colgate MaxFresh Spicy Fresh Red Gel (150 g)</span>
-                <span className="banner-desc">View verified 36.8K customer reviews, multi-store pricing, and AI insights dashboard</span>
+                <span className="banner-title">Best Visual Matches Identified</span>
+                <span className="banner-desc">Select the exact model matching your uploaded image to generate custom AI reviews & multi-store pricing.</span>
               </div>
             </div>
-            <button className="btn-view-quick-colgate" onClick={onSelectColgate}>
-              <span>Open Colgate Dashboard</span>
-              <span className="arrow">→</span>
-            </button>
+            {onSelectColgate && (
+              <button className="btn-view-quick-colgate" onClick={onSelectColgate} title="View sample demo">
+                <span>View Sample Demo</span>
+                <span className="arrow">→</span>
+              </button>
+            )}
           </div>
         </div>
 

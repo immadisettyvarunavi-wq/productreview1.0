@@ -138,6 +138,7 @@ function App() {
       {((status === 'success' && !demoAnalyzing) || (activeNavTab !== 'Home' && status !== 'processing' && !demoAnalyzing)) && (
         <ReportPage
           data={data}
+          preview={preview}
           initialSubTab={reportSubTab}
           onReset={() => {
             setActiveNavTab('Home');
