@@ -4,7 +4,7 @@
  */
 
 // Default deployed backend URL on Render
-const DEFAULT_REMOTE_API = 'https://product-review-ghmx.onrender.com/api/v1';
+const DEFAULT_REMOTE_API = 'https://productreview1-0.onrender.com/api/v1';
 
 let rawApiUrl = (import.meta.env.VITE_API_URL || '').trim();
 if (rawApiUrl && !rawApiUrl.startsWith('http://') && !rawApiUrl.startsWith('https://')) {
