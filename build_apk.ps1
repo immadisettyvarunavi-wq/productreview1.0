@@ -9,7 +9,7 @@ $env:GRADLE_USER_HOME = "d:\.gradle"
 Set-Location -Path "$PSScriptRoot\frontend"
 Write-Host "`n1. Building Frontend Assets (npm run build)..." -ForegroundColor Yellow
 if (-not $env:VITE_API_URL) {
-    $env:VITE_API_URL = "https://product-review-ghmx.onrender.com/api/v1"
+    $env:VITE_API_URL = "https://productreview1-0.onrender.com/api/v1"
 }
 Write-Host "   Using Backend API URL: $env:VITE_API_URL" -ForegroundColor Cyan
 npm run build
