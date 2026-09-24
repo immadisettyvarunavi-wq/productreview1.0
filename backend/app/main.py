@@ -107,11 +107,16 @@ if frontend_dist.exists() and (frontend_dist / "index.html").exists():
     if assets_dir.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
+    @app.get("/")
+    async def serve_root():
+        """Serve index.html at root for single-service deployment."""
+        return FileResponse(str(frontend_dist / "index.html"))
+
     @app.get("/{full_path:path}")
     async def serve_spa(request: Request, full_path: str):
         """Serve frontend static files or fallback to index.html for SPA routing."""
-        # Never intercept API or uploads routes
-        if full_path.startswith("api") or full_path.startswith("uploads"):
+        # Never intercept API, uploads, or docs routes
+        if full_path.startswith("api") or full_path.startswith("uploads") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
             return JSONResponse(status_code=404, content={"detail": "Not Found"})
         target_file = frontend_dist / full_path
         if target_file.is_file():
