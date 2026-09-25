@@ -1,7 +1,6 @@
 """Pydantic schemas for LLM analysis results."""
 
 from pydantic import BaseModel
-from typing import Optional
 
 
 class EvidenceItem(BaseModel):

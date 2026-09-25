@@ -11,30 +11,6 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
 
-  // Start or restart camera stream
-  useEffect(() => {
-    if (!isOpen) {
-      stopCamera();
-      return;
-    }
-
-    startCamera(facingMode);
-
-    return () => {
-      stopCamera();
-    };
-  }, [isOpen, facingMode]);
-
-  // Check if device has multiple video inputs
-  useEffect(() => {
-    if (navigator.mediaDevices?.enumerateDevices) {
-      navigator.mediaDevices.enumerateDevices().then((devices) => {
-        const videoInputs = devices.filter((d) => d.kind === 'videoinput');
-        setHasMultipleCameras(videoInputs.length > 1);
-      }).catch(() => {});
-    }
-  }, []);
-
   const stopCamera = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -44,8 +20,12 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }) {
   };
 
   const startCamera = async (mode) => {
-    stopCamera();
-    setCameraError(null);
+    await Promise.resolve();
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setCameraError('In-app camera streaming is not supported on this browser.');
@@ -59,7 +39,7 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }) {
           video: { facingMode: { ideal: mode } },
           audio: false,
         });
-      } catch (err1) {
+      } catch {
         stream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: false,
@@ -67,6 +47,7 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }) {
       }
 
       streamRef.current = stream;
+      setCameraError(null);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -84,6 +65,27 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture }) {
       }
     }
   };
+
+  // Start or restart camera stream
+  useEffect(() => {
+    if (!isOpen) return;
+
+    startCamera(facingMode);
+
+    return () => {
+      stopCamera();
+    };
+  }, [isOpen, facingMode]);
+
+  // Check if device has multiple video inputs
+  useEffect(() => {
+    if (navigator.mediaDevices?.enumerateDevices) {
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+        const videoInputs = devices.filter((d) => d.kind === 'videoinput');
+        setHasMultipleCameras(videoInputs.length > 1);
+      }).catch(() => {});
+    }
+  }, []);
 
   // Flip rear / front camera
   const toggleFacingMode = () => {

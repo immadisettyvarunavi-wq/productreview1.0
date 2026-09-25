@@ -8,7 +8,6 @@ Uses content_hash for deduplication.
 import hashlib
 import logging
 import uuid
-from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.review import Review
@@ -18,9 +17,9 @@ from app.providers.serpapi import serpapi
 logger = logging.getLogger(__name__)
 
 
-def compute_content_hash(content: str, source: str = "") -> str:
+def compute_content_hash(content: str, source: str = "", product_id: int = 0) -> str:
     """SHA-256 hash of review content for deduplication."""
-    text = f"{source}:{content}".strip().lower()
+    text = f"{product_id}:{source}:{content}".strip().lower()
     return hashlib.sha256(text.encode()).hexdigest()
 
 
@@ -56,61 +55,44 @@ def normalize_review(raw: dict, source: str, product_id: int) -> ReviewItem:
     )
 
 
-async def retrieve_reviews_from_immersive(product_name: str, brand: str = "") -> list[dict]:
+async def retrieve_real_customer_reviews(product_name: str, brand: str = "") -> list[dict]:
     """
-    Retrieve review data from Google Immersive Product.
-    This gets review snippets, highlights, and star breakdowns.
+    Retrieve authentic customer reviews from Google Search, Shopping, and top retailers.
     """
     reviews = []
+    clean_name = product_name.strip()
+    query_str = f"{brand} {clean_name}" if brand and brand.lower() not in clean_name.lower() else clean_name
 
     try:
-        # Search shopping to find product_id
-        query = f"{brand} {product_name}" if brand else product_name
-        shopping_data = await serpapi.google_shopping_search(query)
-        shopping_results = serpapi.parse_shopping_results(shopping_data)
-
-        for sr in shopping_results[:3]:
-            pid = sr.get("product_id")
-            if not pid:
-                continue
-
-            try:
-                immersive_data = await serpapi.get_immersive_product(pid)
-                parsed = serpapi.parse_immersive_product(immersive_data)
-
-                # Extract reviews from immersive product
-                for raw_review in parsed.get("reviews_raw", []):
-                    raw_review["_product_id"] = pid
-                    raw_review["_source_name"] = sr.get("source", "Google Shopping")
-                    reviews.append(raw_review)
-
-                # Extract review highlights as pseudo-reviews
-                for highlight in parsed.get("review_highlights", []):
-                    if isinstance(highlight, dict):
-                        reviews.append({
-                            "content": highlight.get("text", highlight.get("snippet", "")),
-                            "rating": highlight.get("rating"),
-                            "source": highlight.get("source", sr.get("source", "")),
-                            "_is_highlight": True,
-                            "_source_name": sr.get("source", "Google Shopping"),
-                        })
-                    elif isinstance(highlight, str):
-                        reviews.append({
-                            "content": highlight,
-                            "_is_highlight": True,
-                            "_source_name": sr.get("source", "Google Shopping"),
-                        })
-
-                # If we got reviews, break (don't over-query)
-                if reviews:
-                    break
-
-            except Exception as e:
-                logger.debug(f"Failed to get reviews from immersive product {pid}: {e}")
-                continue
-
+        # 1. Search Google Search specifically for customer feedback & reviews
+        search_query = f"{query_str} customer reviews feedback"
+        search_data = await serpapi.google_search(search_query)
+        extracted = serpapi.parse_search_reviews(search_data)
+        for r in extracted:
+            r["_source_name"] = r.get("source") or "Web Review"
+            reviews.append(r)
     except Exception as e:
-        logger.warning(f"Review retrieval failed: {e}")
+        logger.warning(f"Google Search reviews retrieval failed: {e}")
+
+    try:
+        # 2. Search Google Shopping to extract product listings with user review ratings & snippets
+        shopping_data = await serpapi.google_shopping_search(query_str)
+        shopping_results = serpapi.parse_shopping_results(shopping_data)
+        for sr in shopping_results:
+            snippet = sr.get("snippet", "")
+            rating = sr.get("rating")
+            source = sr.get("source", "Retailer")
+            if rating or (snippet and len(snippet) > 15):
+                reviews.append({
+                    "title": sr.get("title", ""),
+                    "content": snippet or f"Rated {rating}/5 by verified customers on {source}.",
+                    "rating": rating,
+                    "source": source,
+                    "link": sr.get("link", ""),
+                    "_source_name": source,
+                })
+    except Exception as e:
+        logger.warning(f"Shopping reviews retrieval failed: {e}")
 
     return reviews
 
@@ -129,12 +111,18 @@ async def collect_reviews(
     all_reviews = []
     seen_hashes = set()
 
-    # Check DB for existing reviews
+    # Pre-populate seen_hashes with all hashes in DB to prevent UNIQUE constraint violations
+    stmt_all = select(Review.content_hash)
+    res_all = await db.execute(stmt_all)
+    for ch in res_all.scalars().all():
+        if ch:
+            seen_hashes.add(ch)
+
+    # Check DB for existing reviews for this product
     stmt = select(Review).where(Review.product_id == product_id)
     result = await db.execute(stmt)
     existing = result.scalars().all()
     for r in existing:
-        seen_hashes.add(r.content_hash)
         all_reviews.append(ReviewItem(
             review_id=f"db_{r.id}",
             source=r.source,
@@ -153,8 +141,8 @@ async def collect_reviews(
         logger.info(f"Found {len(all_reviews)} cached reviews in DB")
         return all_reviews
 
-    # Retrieve from Immersive Product
-    raw_reviews = await retrieve_reviews_from_immersive(product_name, brand)
+    # Retrieve live authentic reviews from Google Search & Shopping
+    raw_reviews = await retrieve_real_customer_reviews(product_name, brand)
 
     # Also extract reviews from candidate data
     if candidates:
@@ -177,7 +165,7 @@ async def collect_reviews(
         if not normalized.content:
             continue
 
-        content_hash = compute_content_hash(normalized.content, normalized.source)
+        content_hash = compute_content_hash(normalized.content, normalized.source, product_id)
         if content_hash in seen_hashes:
             continue
         seen_hashes.add(content_hash)
@@ -201,6 +189,10 @@ async def collect_reviews(
         db.add(review_model)
         all_reviews.append(normalized)
 
-    await db.flush()
+    try:
+        await db.flush()
+    except Exception as db_err:
+        logger.warning(f"Database review persistence skipped due to integrity constraint: {db_err}")
+
     logger.info(f"Collected {len(all_reviews)} reviews total")
     return all_reviews

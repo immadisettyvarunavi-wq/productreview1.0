@@ -7,8 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.review import Review
 from app.models.analysis import ReviewAnalysis
-from app.services.review_service import collect_reviews
-from app.services.aggregation import aggregate_reviews
 from app.services.llm_analysis import analyze_reviews_with_llm
 from app.services.evidence import validate_evidence
 from app.schemas.review import ReviewItem

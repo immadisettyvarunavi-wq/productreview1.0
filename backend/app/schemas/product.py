@@ -1,8 +1,7 @@
 """Pydantic schemas for product-related request/response data."""
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime
 from enum import Enum
 
 
@@ -66,6 +65,8 @@ class ProductDetail(BaseModel):
     model_name: str = ""
     category: str = ""
     image_url: str = ""
+    images: list[str] = []
+    description: str = ""
     rating: Optional[float] = None
     review_count: Optional[int] = None
     prices: list[PriceInfo] = []

@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-export default function ProcessingPipeline({ currentStep = 1, steps = [], preview, onCancel }) {
-  const [selectedThumb, setSelectedThumb] = useState(0);
+export default function ProcessingPipeline({ currentStep: _currentStep = 1, steps: _steps = [], preview, activeQuery, onCancel }) {
   const [progress, setProgress] = useState(28);
   const [estTime, setEstTime] = useState(25);
-  const [baseTime, setBaseTime] = useState(new Date());
+  const [baseTime] = useState(() => new Date());
 
-  // Default images if preview not provided
-  const mainImage = preview || '/assets/headphones_table.jpg';
-  const thumbnails = [
-    mainImage,
-    '/assets/headphones_isolated.jpg',
-    '/assets/smartwatch.jpg',
-    '/assets/sneaker.jpg',
-  ];
+  const candidateTitle = activeQuery || (preview ? 'Uploaded Product' : 'Product Identification');
+  const queryTokens = activeQuery
+    ? activeQuery.replace(/[(),]/g, ' ').split(/\s+/).filter(w => w.length > 2).slice(0, 4)
+    : ['Catalog', 'Live Search', 'Verified Sellers', 'Reviews'];
 
   // Dynamically advance progress and countdown estimated time
   useEffect(() => {
@@ -37,14 +32,14 @@ export default function ProcessingPipeline({ currentStep = 1, steps = [], previe
   };
 
   const activityLogs = [
-    { time: formatTime(0), text: 'Uploading image...', status: 'done' },
-    { time: formatTime(2), text: 'Image uploaded successfully', status: 'done' },
-    { time: formatTime(3), text: 'Searching for visually similar products...', status: 'done' },
-    { time: formatTime(5), text: 'Found 8 possible product matches', status: 'active' },
-    { time: formatTime(7), text: 'Analyzing product details...', status: 'pending' },
-    { time: formatTime(9), text: 'Collecting customer reviews...', status: 'pending' },
-    { time: formatTime(11), text: 'Analyzing reviews with AI...', status: 'pending' },
-    { time: formatTime(13), text: 'Building your report...', status: 'pending' },
+    { time: formatTime(0), text: preview ? 'Uploading image...' : 'Initializing query catalog search...', status: 'done' },
+    { time: formatTime(2), text: preview ? 'Image processed successfully' : 'Query dispatched to live shopping index', status: 'done' },
+    { time: formatTime(3), text: 'Searching verified retailer listings...', status: 'done' },
+    { time: formatTime(5), text: 'Matching product candidates & pricing', status: 'active' },
+    { time: formatTime(7), text: 'Analyzing specifications & variants...', status: 'pending' },
+    { time: formatTime(9), text: 'Collecting authentic customer reviews...', status: 'pending' },
+    { time: formatTime(11), text: 'Synthesizing evidence-based AI insights...', status: 'pending' },
+    { time: formatTime(13), text: 'Building intelligence report...', status: 'pending' },
   ];
 
   return (
@@ -68,40 +63,43 @@ export default function ProcessingPipeline({ currentStep = 1, steps = [], previe
             </div>
           </div>
 
-          {/* Main Uploaded Image Viewport */}
-          <div className="uploaded-image-frame">
-            <img src={thumbnails[selectedThumb]} alt="Product" className="uploaded-main-img" />
-            <div className="uploaded-tag-badge">Uploaded Image</div>
-          </div>
-
-          {/* 4 Thumbnails Selector */}
-          <div className="thumbnails-row">
-            {thumbnails.map((thumb, idx) => (
-              <div
-                key={idx}
-                className={`thumb-box ${selectedThumb === idx ? 'active' : ''}`}
-                onClick={() => setSelectedThumb(idx)}
-              >
-                <img src={thumb} alt={`Thumbnail ${idx + 1}`} />
+          {/* Main Uploaded Image or Radar Viewport */}
+          <div className="uploaded-image-frame" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at center, rgba(56,189,248,0.15) 0%, rgba(15,23,42,0.8) 70%)', minHeight: 220 }}>
+            {preview ? (
+              <>
+                <img src={preview} alt="Product" className="uploaded-main-img" />
+                <div className="uploaded-tag-badge">Uploaded Image</div>
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '24px 16px' }}>
+                <div style={{ fontSize: 44, marginBottom: 12, animation: 'pulse 2s infinite' }}>⚡</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#f8fafc', marginBottom: 4 }}>
+                  {candidateTitle}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--accent-cyan, #38bdf8)' }}>
+                  📡 Searching live shopping index & verified sellers
+                </div>
+                <div className="uploaded-tag-badge">Live Search</div>
               </div>
-            ))}
+            )}
           </div>
 
           {/* Detected Candidate Card */}
           <div className="detected-candidate-box">
             <div className="candidate-top-row">
-              <span className="candidate-label">Detected Product Candidate</span>
+              <span className="candidate-label">Detected Target Product</span>
               <span className="candidate-match-pill">
-                <span className="pill-check">✓</span> 92% match
+                <span className="pill-check">✓</span> 98% match
               </span>
             </div>
-            <h3 className="candidate-name">Sony WH-1000XM5</h3>
-            <p className="candidate-desc">Wireless Noise Cancelling Headphones</p>
+            <h3 className="candidate-name">{candidateTitle}</h3>
+            <p className="candidate-desc">
+              {activeQuery ? 'Aggregating verified retailer listings & authentic customer reviews' : 'Visual match identification in progress'}
+            </p>
             <div className="candidate-tags-row">
-              <span className="candidate-tag">Sony</span>
-              <span className="candidate-tag">WH-1000XM5</span>
-              <span className="candidate-tag">Headphones</span>
-              <span className="candidate-tag">Electronics</span>
+              {queryTokens.map((token, idx) => (
+                <span key={idx} className="candidate-tag">{token}</span>
+              ))}
             </div>
           </div>
 
@@ -298,9 +296,9 @@ export default function ProcessingPipeline({ currentStep = 1, steps = [], previe
                 </svg>
               </div>
               <div className="metric-content">
-                <h3 className="metric-val">3</h3>
-                <p className="metric-name">Price matches</p>
-                <span className="metric-footnote">From ₹24,999 – ₹29,990</span>
+                <h3 className="metric-val">Live</h3>
+                <p className="metric-name">Price verification</p>
+                <span className="metric-footnote">Comparing Amazon, Flipkart & retail stores</span>
               </div>
             </div>
           </div>
@@ -353,9 +351,10 @@ export default function ProcessingPipeline({ currentStep = 1, steps = [], previe
                 {/* Header Skeleton */}
                 <div className="skeleton-header-row">
                   <div className="skeleton-avatar-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5">
-                      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-                      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                      <line x1="12" y1="22.08" x2="12" y2="12" />
                     </svg>
                   </div>
                   <div className="skeleton-text-group">

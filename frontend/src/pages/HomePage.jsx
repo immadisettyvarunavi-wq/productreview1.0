@@ -1,7 +1,7 @@
 import React from 'react';
 import HeroUpload from '../components/HeroUpload';
 
-export default function HomePage({ onUpload, onOpenCamera, onTestAnalyzing, isProcessing }) {
+export default function HomePage({ onUpload, onOpenCamera, onTestAnalyzing, isProcessing, onSearch }) {
   return (
     <div className="home-page-wrap">
       {/* Hero Section */}
@@ -9,6 +9,7 @@ export default function HomePage({ onUpload, onOpenCamera, onTestAnalyzing, isPr
         onUpload={onUpload}
         onOpenCamera={onOpenCamera}
         onTestAnalyzing={onTestAnalyzing}
+        onSearch={onSearch}
         isProcessing={isProcessing}
       />
 

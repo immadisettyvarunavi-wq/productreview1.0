@@ -1,6 +1,6 @@
 """Pydantic schemas for review data."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional
 
 

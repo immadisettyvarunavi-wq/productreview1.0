@@ -23,7 +23,7 @@ const isNativeApp = typeof window !== 'undefined' && (
 // Resolution priority:
 // 1. Explicit VITE_API_URL configured at build/runtime
 // 2. If running on Mobile APK (Capacitor), ALWAYS use the live Render backend
-// 3. If running on deployed Web (e.g. Render), use the current origin
+// 3. If running on deployed Web (Unified Render deployment), use the current origin
 // 4. Local browser dev (e.g. localhost:5173), use localhost:8000
 const API_BASE = rawApiUrl
   || (isNativeApp
@@ -49,6 +49,27 @@ export async function analyzeImage(file) {
     const response = await fetch(`${API_BASE}/products/analyze-image`, {
       method: 'POST',
       body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  } catch (err) {
+    return handleFetchError(err);
+  }
+}
+
+export async function analyzeProductQuery(query) {
+  try {
+    const response = await fetch(`${API_BASE}/products/analyze-query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {

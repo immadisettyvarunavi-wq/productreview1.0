@@ -3,7 +3,6 @@
 from pydantic_settings import BaseSettings
 from typing import List
 from pathlib import Path
-import os
 
 
 class Settings(BaseSettings):
@@ -12,9 +11,18 @@ class Settings(BaseSettings):
     # --- API Keys (NEVER exposed to frontend) ---
     SERPAPI_API_KEY: str = ""
     HUGGINGFACE_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    GROQ_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
 
     # --- Database ---
     DATABASE_URL: str = "sqlite+aiosqlite:///./reviewai.db"
+    MYSQL_URL: str = "mysql+aiomysql://root:123456@localhost:3306/reviewly_db"
+
+    # --- JWT Auth ---
+    JWT_SECRET_KEY: str = "reviewly_super_secret_key_2024_change_in_production"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_MINUTES: int = 1440  # 24 hours
 
     # --- File Upload ---
     UPLOAD_DIR: str = "./uploads"

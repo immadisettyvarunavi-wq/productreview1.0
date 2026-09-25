@@ -1,12 +1,12 @@
 import React, { useRef, useState, useCallback } from 'react';
 
-export default function HeroUpload({ onUpload, onOpenCamera, onTestAnalyzing, isProcessing }) {
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_SIZE_MB = 10;
+
+export default function HeroUpload({ onUpload, onOpenCamera, onTestAnalyzing, onSearch, isProcessing }) {
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
-
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-  const MAX_SIZE_MB = 10;
 
   const handleFile = useCallback((file) => {
     if (!file) return;
@@ -145,6 +145,38 @@ export default function HeroUpload({ onUpload, onOpenCamera, onTestAnalyzing, is
                 <span className="demo-duration">1 min</span>
               </div>
             </button>
+          </div>
+
+          {/* Quick Trending Live Searches */}
+          <div className="hero-trending-chips" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', margin: '18px 0 10px 0' }}>
+            <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: '500' }}>⚡ Try live search:</span>
+            {['Sony WH-1000XM5', 'Colgate MaxFresh', 'boAt Rockerz 450', 'Nike Air Force 1', 'iPhone 15 Pro'].map((term) => (
+              <button
+                key={term}
+                type="button"
+                onClick={() => onSearch && onSearch(term)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: '#e2e8f0',
+                  padding: '5px 12px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'rgba(168, 85, 247, 0.25)';
+                  e.currentTarget.style.borderColor = '#c084fc';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                }}
+              >
+                {term}
+              </button>
+            ))}
           </div>
 
           {/* Social Proof */}

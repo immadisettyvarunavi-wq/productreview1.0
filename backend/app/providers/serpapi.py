@@ -11,7 +11,6 @@ import httpx
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -269,6 +268,46 @@ class SerpApiProvider:
                 "delivery": item.get("delivery", ""),
             })
         return results
+
+
+    # ─── GOOGLE SEARCH & REVIEWS ──────────────────────────────────────
+
+    async def google_search(self, query: str, gl: str = "in", hl: str = "en") -> dict:
+        """Search Google Search for reviews, snippets, and retailer feedback."""
+        params = {
+            "engine": "google",
+            "q": query,
+            "gl": gl,
+            "hl": hl,
+        }
+        return await self._request(params)
+
+    def parse_search_reviews(self, data: dict) -> list[dict]:
+        """Extract customer reviews and feedback snippets from Google Search."""
+        reviews = []
+        for item in data.get("organic_results", []):
+            snippet = item.get("snippet", "")
+            title = item.get("title", "")
+            source = item.get("displayed_link", item.get("source", ""))
+            link = item.get("link", "")
+            rich_snippet = item.get("rich_snippet", {}) or {}
+
+            # Extract rating if present in rich snippet
+            rating = None
+            if rich_snippet:
+                top_ext = rich_snippet.get("top", {}).get("detected_extensions", {})
+                bottom_ext = rich_snippet.get("bottom", {}).get("detected_extensions", {})
+                rating = top_ext.get("rating") or bottom_ext.get("rating")
+
+            if snippet and len(snippet) > 20:
+                reviews.append({
+                    "title": title,
+                    "content": snippet,
+                    "source": source,
+                    "link": link,
+                    "rating": rating,
+                })
+        return reviews
 
 
 # Module-level singleton

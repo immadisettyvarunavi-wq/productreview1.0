@@ -1,4 +1,4 @@
-export default function ReviewDistribution({ distribution, totalReviews }) {
+export default function ReviewDistribution({ distribution, _totalReviews }) {
   if (!distribution || Object.keys(distribution).length === 0) return null;
 
   // Ensure all stars are represented

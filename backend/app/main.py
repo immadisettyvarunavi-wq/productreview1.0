@@ -6,17 +6,24 @@ Image → Real Product → Real Customer Reviews → Evidence-Based AI Summary
 
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 from pathlib import Path
 
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
+
+from app.api.analysis import router as analysis_router
+from app.api.auth import router as auth_router
+from app.api.products import router as products_router
+from app.api.reviews import router as reviews_router
+from app.api.upload import router as upload_router
 from app.config import settings
 from app.database import init_db
+from app.database_mysql import init_mysql_db
 
 # Configure logging
 logging.basicConfig(
@@ -34,6 +41,11 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
     logger.info("Starting Product Review Intelligence...")
     await init_db()
+    try:
+        await init_mysql_db()
+        logger.info("MySQL database initialized for authentication.")
+    except Exception as e:
+        logger.warning(f"MySQL init failed (auth will be unavailable): {e}")
     settings.ensure_upload_dir()
     logger.info("Database initialized, upload directory ready.")
 
@@ -71,12 +83,8 @@ uploads_dir = Path(settings.UPLOAD_DIR)
 uploads_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
-# Import and include routers
-from app.api.upload import router as upload_router
-from app.api.products import router as products_router
-from app.api.reviews import router as reviews_router
-from app.api.analysis import router as analysis_router
-
+# Include routers
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(upload_router, prefix="/api/v1/products", tags=["Upload & Analysis"])
 app.include_router(products_router, prefix="/api/v1/products", tags=["Products"])
 app.include_router(reviews_router, prefix="/api/v1/products", tags=["Reviews"])
@@ -95,8 +103,6 @@ async def health():
 
 
 # Serve built React frontend if dist directory exists (Unified single-service deployment)
-from fastapi.responses import FileResponse
-
 frontend_dist_root = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
 frontend_dist_local = Path(__file__).resolve().parent.parent / "dist"
 frontend_dist = frontend_dist_root if (frontend_dist_root / "index.html").exists() else frontend_dist_local

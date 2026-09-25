@@ -1,4 +1,4 @@
-export default function ReviewCard({ review, isHighlighted, onEvidenceClick }) {
+export default function ReviewCard({ review, isHighlighted, _onEvidenceClick }) {
   const fullStars = Math.floor(review.rating || 0);
   const emptyStars = 5 - fullStars;
 

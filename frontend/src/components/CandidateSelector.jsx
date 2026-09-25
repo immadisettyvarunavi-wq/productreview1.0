@@ -16,23 +16,6 @@ export default function CandidateSelector({ candidates, onSelect, onSelectColgat
           <p className="candidate-subheading">
             We discovered {candidates.length} matching product listings. Click on any product below to view its complete customer review intelligence, price comparison, and AI summary.
           </p>
-
-          {/* Helpful matching tip banner */}
-          <div className="candidate-quick-pick-banner">
-            <div className="banner-left">
-              <span className="banner-sparkle">✨</span>
-              <div className="banner-text">
-                <span className="banner-title">Best Visual Matches Identified</span>
-                <span className="banner-desc">Select the exact model matching your uploaded image to generate custom AI reviews & multi-store pricing.</span>
-              </div>
-            </div>
-            {onSelectColgate && (
-              <button className="btn-view-quick-colgate" onClick={onSelectColgate} title="View sample demo">
-                <span>View Sample Demo</span>
-                <span className="arrow">→</span>
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Product Cards Grid */}
@@ -77,7 +60,7 @@ export default function CandidateSelector({ candidates, onSelect, onSelectColgat
                     <span className="stars-gold">★★★★★</span>
                     <span className="candidate-rating-num">{candidate.rating || '4.5'}</span>
                     <span className="candidate-reviews-num">
-                      ({candidate.reviews ? Number(candidate.reviews).toLocaleString() : '1,200+'} reviews)
+                      ({candidate.reviews ? `${Number(candidate.reviews).toLocaleString()} reviews` : 'Verified Listing'})
                     </span>
                   </div>
 
@@ -85,7 +68,7 @@ export default function CandidateSelector({ candidates, onSelect, onSelectColgat
                   <div className="candidate-card-bottom-row">
                     <div className="candidate-price-wrap">
                       <span className="price-label">Price</span>
-                      <strong className="price-val">{displayPrice || '₹149 – ₹199'}</strong>
+                      <strong className="price-val">{displayPrice || 'Live Pricing'}</strong>
                     </div>
 
                     <button

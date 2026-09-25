@@ -11,7 +11,6 @@ Scoring considers:
 
 import re
 import logging
-from collections import Counter
 from app.config import settings
 from app.schemas.product import ProductCandidate, ProductMatch, MatchStatus
 
@@ -25,7 +24,12 @@ BRAND_PATTERNS = [
     r"Corsair|Razer|HyperX|SteelSeries|Marshall|Sennheiser|"
     r"Audio-Technica|Skullcandy|Anker|Jabra|Nothing|Google|Microsoft|"
     r"Amazon|Kindle|Intel|AMD|Nvidia|WH-|Galaxy|iPhone|iPad|MacBook|"
-    r"ThinkPad|Redmi|Poco|iQOO|Motorola|Nokia|Honor|Huawei)\b",
+    r"ThinkPad|Redmi|Poco|iQOO|Motorola|Nokia|Honor|Huawei|"
+    r"Zebronics|Boult|Portronics|Mivi|pTron|Infinity|Cosmic Byte|Ant Esports|"
+    r"Colgate|Dettol|Dove|Nivea|Pepsodent|Sensodyne|Oral-B|Garnier|L'Oreal|"
+    r"Himalaya|Biotique|Mamaearth|Pond's|Vaseline|Parachute|Wild Stone|Fogg|Axe|"
+    r"Park Avenue|Fastrack|Titan|Casio|Crocs|Skechers|Reebok|Woodland|Bata|Sparx|"
+    r"Zara|Levis|Peter England|Van Heusen|Allen Solly)\b",
 ]
 
 # Model number patterns

@@ -58,10 +58,12 @@ pnpm-debug.log*
 
 # Android / Mobile Builds
 *.apk
+*.apk.bak
 *.aab
 *.ap_
 *.dex
 Reviewly.apk
+backend/dist/
 frontend/android/.gradle/
 frontend/android/build/
 frontend/android/app/build/
