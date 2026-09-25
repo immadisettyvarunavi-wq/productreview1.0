@@ -34,6 +34,36 @@ class ConflictingOpinion(BaseModel):
     negative_review_ids: list[str] = []
 
 
+class AspectScore(BaseModel):
+    """Aspect-based sentiment analysis score."""
+    aspect: str
+    score: float = 0.0          # -1.0 to 1.0
+    rating: float = 0.0         # 1.0 to 5.0
+    mention_count: int = 0
+    sentiment: str = "neutral"  # positive, neutral, negative
+    positive_phrases: list[str] = []
+    negative_phrases: list[str] = []
+    top_quote: str = ""
+
+
+class ReviewCredibility(BaseModel):
+    """Credibility index of reviews (authenticity vs spam/bot patterns)."""
+    authenticity_score: int = 85        # 0 to 100%
+    verified_ratio: float = 0.0         # 0.0 to 1.0
+    credibility_grade: str = "High"
+    flagged_patterns: list[str] = []
+    sample_size: int = 0
+
+
+class NlpInsights(BaseModel):
+    """Deep NLP engine insights."""
+    aspect_scores: list[AspectScore] = []
+    credibility: ReviewCredibility = ReviewCredibility()
+    dominant_emotions: list[dict] = []
+    top_keywords_positive: list[str] = []
+    top_keywords_negative: list[str] = []
+
+
 class AnalysisResult(BaseModel):
     """Full LLM analysis output — evidence-based only."""
     product_summary: str = ""  # 4 to 5 lines evidence-based summary synthesized from real reviews
@@ -50,6 +80,7 @@ class AnalysisResult(BaseModel):
     evidence: list[EvidenceItem] = []
     review_count_analyzed: int = 0
     data_quality_note: str = ""
+    nlp_insights: NlpInsights | None = None
 
 
 class FullReportResponse(BaseModel):

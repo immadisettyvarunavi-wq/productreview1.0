@@ -17,6 +17,7 @@ import httpx
 from app.config import settings
 from app.schemas.review import ReviewItem
 from app.schemas.analysis import AnalysisResult, SentimentDistribution, EvidenceItem, ThemeItem, ConflictingOpinion
+from app.services.nlp_engine import run_nlp_analysis
 
 logger = logging.getLogger(__name__)
 
@@ -201,12 +202,17 @@ async def analyze_reviews_with_llm(
 
     prompt = build_review_prompt(reviews, product_name, brand)
 
+    # Compute deep NLP insights across authentic reviews
+    nlp_data = run_nlp_analysis(reviews, product_name, brand)
+
     # 1. Try Gemini
     try:
         data = await _call_gemini(prompt)
         if data:
             logger.info("Successfully analyzed reviews via Google Gemini")
-            return _parse_analysis(data, len(reviews))
+            res = _parse_analysis(data, len(reviews))
+            res.nlp_insights = nlp_data
+            return res
     except Exception as e:
         logger.debug(f"Gemini API attempt skipped/failed: {e}")
 
@@ -215,7 +221,9 @@ async def analyze_reviews_with_llm(
         data = await _call_groq(prompt)
         if data:
             logger.info("Successfully analyzed reviews via Groq")
-            return _parse_analysis(data, len(reviews))
+            res = _parse_analysis(data, len(reviews))
+            res.nlp_insights = nlp_data
+            return res
     except Exception as e:
         logger.debug(f"Groq API attempt skipped/failed: {e}")
 
@@ -224,7 +232,9 @@ async def analyze_reviews_with_llm(
         data = await _call_openai(prompt)
         if data:
             logger.info("Successfully analyzed reviews via OpenAI")
-            return _parse_analysis(data, len(reviews))
+            res = _parse_analysis(data, len(reviews))
+            res.nlp_insights = nlp_data
+            return res
     except Exception as e:
         logger.debug(f"OpenAI API attempt skipped/failed: {e}")
 
@@ -233,13 +243,17 @@ async def analyze_reviews_with_llm(
         data = await _call_huggingface(prompt)
         if data:
             logger.info("Successfully analyzed reviews via HuggingFace")
-            return _parse_analysis(data, len(reviews))
+            res = _parse_analysis(data, len(reviews))
+            res.nlp_insights = nlp_data
+            return res
     except Exception as e:
         logger.debug(f"HuggingFace API attempt skipped/failed: {e}")
 
     # 5. Fallback: Deterministic Anti-Hallucination Evidence Synthesis Engine
     logger.info("Running Deterministic Anti-Hallucination NLP Evidence Engine on authentic reviews")
-    return _evidence_synthesis_engine(reviews, product_name, brand)
+    res = _evidence_synthesis_engine(reviews, product_name, brand)
+    res.nlp_insights = nlp_data
+    return res
 
 
 def _extract_json(text: str) -> Optional[dict]:

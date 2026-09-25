@@ -79,3 +79,47 @@ async def analyze_product_reviews(
         "status": "success",
         "analysis": analysis.model_dump(),
     }
+
+
+@router.get("/{product_id}/nlp-insights")
+async def get_product_nlp_insights(
+    product_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """Direct endpoint to run the NLP engine on stored reviews for a product."""
+    from app.services.nlp_engine import run_nlp_analysis
+
+    stmt = select(Product).where(Product.id == product_id)
+    result = await db.execute(stmt)
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    stmt = select(Review).where(Review.product_id == product_id)
+    result = await db.execute(stmt)
+    db_reviews = result.scalars().all()
+
+    reviews = [
+        ReviewItem(
+            review_id=f"db_{r.id}",
+            source=r.source,
+            source_url=r.source_url,
+            rating=r.rating,
+            title=r.title,
+            content=r.content,
+            date=r.review_date or "",
+            verified_purchase=r.verified_purchase,
+            helpful_votes=r.helpful_votes,
+        )
+        for r in db_reviews
+    ]
+
+    insights = run_nlp_analysis(reviews, product_name=product.name, brand=product.brand)
+
+    return {
+        "status": "success",
+        "product_id": product_id,
+        "product_name": product.name,
+        "reviews_analyzed": len(reviews),
+        "nlp_insights": insights.model_dump(),
+    }
