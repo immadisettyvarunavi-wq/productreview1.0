@@ -52,7 +52,10 @@ export default function AuthPage() {
       refreshAuth();
       setTimeout(() => navigate('/'), 400);
     } catch (err) {
-      setError(err.message || 'Something went wrong');
+      const msg = typeof err === 'string'
+        ? err
+        : err?.message || 'Something went wrong';
+      setError(typeof msg === 'object' ? JSON.stringify(msg) : String(msg));
     } finally {
       setLoading(false);
     }
@@ -218,12 +221,18 @@ export default function AuthPage() {
               type="submit"
               className="auth-submit"
               disabled={loading}
+              id="auth-submit-btn"
             >
-              {loading ? (
-                <span className="auth-spinner" />
-              ) : (
-                mode === 'signup' ? 'Create Account' : 'Sign In'
-              )}
+              <span className="auth-submit-inner">
+                {loading ? (
+                  <>
+                    <span className="auth-spinner" />
+                    <span>{mode === 'signup' ? 'Creating Account...' : 'Signing In...'}</span>
+                  </>
+                ) : (
+                  <span>{mode === 'signup' ? 'Create Account' : 'Sign In'}</span>
+                )}
+              </span>
             </button>
           </form>
 

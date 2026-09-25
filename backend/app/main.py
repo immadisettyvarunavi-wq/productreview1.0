@@ -41,11 +41,12 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
     logger.info("Starting Product Review Intelligence...")
     await init_db()
+    logger.info("Primary database initialized (products, reviews, auth).")
     try:
         await init_mysql_db()
-        logger.info("MySQL database initialized for authentication.")
+        logger.info("MySQL database connected.")
     except Exception as e:
-        logger.warning(f"MySQL init failed (auth will be unavailable): {e}")
+        logger.debug(f"Optional MySQL skipped: {e}")
     settings.ensure_upload_dir()
     logger.info("Database initialized, upload directory ready.")
 

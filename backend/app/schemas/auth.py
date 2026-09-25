@@ -19,8 +19,8 @@ class SignUpRequest(BaseModel):
             raise ValueError("Username must be at least 3 characters")
         if len(v) > 100:
             raise ValueError("Username must be at most 100 characters")
-        if not re.match(r"^[a-zA-Z0-9_]+$", v):
-            raise ValueError("Username can only contain letters, numbers, and underscores")
+        if not re.match(r"^[a-zA-Z0-9_.@+-]+$", v):
+            raise ValueError("Username can only contain letters, numbers, underscores, dots, hyphens, and @")
         return v
 
     @field_validator("email")

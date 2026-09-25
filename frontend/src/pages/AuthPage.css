@@ -276,6 +276,16 @@
   color: rgba(255,255,255,0.25);
 }
 
+.auth-input-wrap input:-webkit-autofill,
+.auth-input-wrap input:-webkit-autofill:hover,
+.auth-input-wrap input:-webkit-autofill:focus,
+.auth-input-wrap input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0b1120 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #ffffff;
+}
+
 .auth-toggle-pw {
   border: none;
   background: transparent;
@@ -293,20 +303,44 @@
 /* === Submit Button === */
 .auth-submit {
   width: 100%;
-  padding: 14px;
+  padding: 14px 20px;
+  min-height: 52px;
   border: none;
   border-radius: 14px;
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff;
+  color: #ffffff !important;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 6px;
+  margin-top: 10px;
   transition: all 0.3s ease;
   font-family: inherit;
   position: relative;
   overflow: hidden;
   letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35);
+}
+
+.auth-submit-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #ffffff !important;
+  font-weight: 700;
+  pointer-events: none;
+  width: 100%;
+}
+
+.auth-submit-inner span {
+  color: #ffffff !important;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .auth-submit::before {
@@ -316,6 +350,7 @@
   background: linear-gradient(135deg, #818cf8, #a78bfa);
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 1;
 }
 
 .auth-submit:hover:not(:disabled)::before {
@@ -324,7 +359,7 @@
 
 .auth-submit:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);
 }
 
 .auth-submit:active:not(:disabled) {
@@ -332,19 +367,20 @@
 }
 
 .auth-submit:disabled {
-  opacity: 0.6;
+  opacity: 0.75;
   cursor: not-allowed;
 }
 
 /* === Spinner === */
 .auth-spinner {
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2.5px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: auth-spin 0.7s linear infinite;
+  flex-shrink: 0;
 }
 
 @keyframes auth-spin {

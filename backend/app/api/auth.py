@@ -2,10 +2,10 @@
 
 import logging
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database_mysql import get_mysql_db
+from app.database import get_db
 from app.models.user import User
 from app.schemas.auth import SignUpRequest, SignInRequest, AuthResponse, UserInfo
 from app.services.auth_service import hash_password, verify_password, create_access_token
@@ -16,18 +16,24 @@ router = APIRouter()
 
 
 @router.post("/signup", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-async def signup(body: SignUpRequest, db: AsyncSession = Depends(get_mysql_db)):
+async def signup(body: SignUpRequest, db: AsyncSession = Depends(get_db)):
     """Register a new user account."""
-    # Check if username or email already exists
+    normalized_username = body.username.strip()
+    normalized_email = body.email.strip().lower()
+
+    # Check if username or email already exists (case-insensitive)
     result = await db.execute(
         select(User).where(
-            or_(User.username == body.username, User.email == body.email)
+            or_(
+                func.lower(User.username) == normalized_username.lower(),
+                func.lower(User.email) == normalized_email,
+            )
         )
     )
     existing = result.scalar_one_or_none()
 
     if existing:
-        if existing.username == body.username:
+        if existing.username.lower() == normalized_username.lower():
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Username already taken",
@@ -39,13 +45,13 @@ async def signup(body: SignUpRequest, db: AsyncSession = Depends(get_mysql_db)):
 
     # Create new user
     user = User(
-        username=body.username,
-        email=body.email,
+        username=normalized_username,
+        email=normalized_email,
         password_hash=hash_password(body.password),
-        full_name=body.full_name,
+        full_name=body.full_name.strip(),
     )
     db.add(user)
-    await db.flush()  # get the auto-generated id
+    await db.commit()
     await db.refresh(user)
 
     logger.info(f"New user registered: {user.username} (id={user.id})")
@@ -65,14 +71,17 @@ async def signup(body: SignUpRequest, db: AsyncSession = Depends(get_mysql_db)):
 
 
 @router.post("/signin", response_model=AuthResponse)
-async def signin(body: SignInRequest, db: AsyncSession = Depends(get_mysql_db)):
+async def signin(body: SignInRequest, db: AsyncSession = Depends(get_db)):
     """Authenticate an existing user with username/email + password."""
     login_value = body.login.strip().lower()
 
-    # Find user by username or email
+    # Find user by username or email (case-insensitive)
     result = await db.execute(
         select(User).where(
-            or_(User.username == login_value, User.email == login_value)
+            or_(
+                func.lower(User.username) == login_value,
+                func.lower(User.email) == login_value,
+            )
         )
     )
     user = result.scalar_one_or_none()
@@ -101,7 +110,7 @@ async def signin(body: SignInRequest, db: AsyncSession = Depends(get_mysql_db)):
 @router.get("/me", response_model=UserInfo)
 async def get_current_user(
     token: str = "",
-    db: AsyncSession = Depends(get_mysql_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get current user info from JWT token (passed as query param or header)."""
     from app.services.auth_service import decode_access_token

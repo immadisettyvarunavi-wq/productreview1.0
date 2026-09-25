@@ -2,11 +2,11 @@
 
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
-from app.database_mysql import MySQLBase
+from app.database import Base
 
 
-class User(MySQLBase):
-    """User entity stored in MySQL."""
+class User(Base):
+    """User entity stored in database."""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
