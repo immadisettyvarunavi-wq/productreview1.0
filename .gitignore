@@ -49,6 +49,8 @@ node_modules/
 frontend/node_modules/
 frontend/dist/
 dist/
+!backend/dist/
+!backend/dist/**
 dist-ssr/
 *.local
 npm-debug.log*
@@ -63,7 +65,6 @@ pnpm-debug.log*
 *.ap_
 *.dex
 Reviewly.apk
-backend/dist/
 frontend/android/.gradle/
 frontend/android/build/
 frontend/android/app/build/
